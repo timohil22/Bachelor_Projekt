@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Abschluss-Fragebogen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/static/style.css">
+  
+  <style>
+    .vertical-radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .vertical-radio-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .vertical-radio-label input[type="radio"] {
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" style="max-width: 700px;">
+    <div class="card">
+      
+      <div class="q-header">
+        <h1>Fragebogen</h1>
+        <p>Vielen Dank für Ihre Teilnahme! Bitte beantworten Sie noch kurz diese Fragen.</p>
+      </div>
+      
+      <form action="/submit_questionnaire" method="post">
+        <input type="hidden" name="code" value="{{ code }}">
+        <input type="hidden" name="pid" value="{{ pid }}">
+
+        <div class="q-section">
+            <span class="q-label">Wie zufrieden sind Sie mit dem Ergebnis der Verhandlung?</span>
+            <div class="vertical-radio-group">
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_satisfaction" value="Sehr zufrieden" required>
+                    Sehr zufrieden
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_satisfaction" value="Zufrieden">
+                    Zufrieden
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_satisfaction" value="Weiss ich nicht">
+                    Weiß ich nicht
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_satisfaction" value="Unzufrieden">
+                    Unzufrieden
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_satisfaction" value="Sehr unzufrieden">
+                    Sehr unzufrieden
+                </label>
+            </div>
+        </div>
+
+        {% if treatment == 'T2' %}
+        <div class="q-section">
+            <span class="q-label">Wie stark haben die unterschiedlichen Verhandlungskosten zwischen Ihnen und Ihrem Verhandlungspartner Ihre Zufriedenheit mit dem Ergebnis beeinflusst?</span>
+            <div class="vertical-radio-group">
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t2_cost_impact" value="Sehr hoher Einfluss" required>
+                    Sehr hoher Einfluss
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t2_cost_impact" value="Hoher Einfluss">
+                    Hoher Einfluss
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t2_cost_impact" value="Weiss ich nicht">
+                    Weiß ich nicht
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t2_cost_impact" value="Geringer Einfluss">
+                    Geringer Einfluss
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t2_cost_impact" value="Keinen Einfluss">
+                    Kein Einfluss
+                </label>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="q-section">
+          <span class="q-label">Wie würden Sie Ihre Geduld einstufen?</span>
+          <div class="vertical-radio-group">
+            <label class="vertical-radio-label">
+                <input type="radio" name="q_patience" value="Geduldig">
+                Geduldig
+            </label>
+            <label class="vertical-radio-label">
+                <input type="radio" name="q_patience" value="Eher geduldig">
+                Eher geduldig
+            </label>
+            <label class="vertical-radio-label">
+                <input type="radio" name="q_patience" value="Weiss ich nicht">
+                Weiß ich nicht
+            </label>
+            <label class="vertical-radio-label">
+                <input type="radio" name="q_patience" value="Eher ungeduldig">
+                Eher ungeduldig
+            </label>
+            <label class="vertical-radio-label">
+                <input type="radio" name="q_patience" value="Ungeduldig">
+                Ungeduldig
+            </label>
+          </div>
+        </div>
+
+        {% if treatment == 'T3' %}
+        <div class="q-section">
+            <label class="q-label" for="t3Input" style="display:block; margin-bottom:10px;">
+                Welche Auswirkungen hätte die Offenlegung des Kostenfaktors Ihres Verhandlungspartners gehabt?
+            </label>
+            <textarea 
+                id="t3Input" 
+                name="q_t3_disclosure_impact" 
+                class="input-styled" 
+                rows="4" 
+                style="width:100%; min-height:100px; font-family:inherit; padding:10px; resize:vertical;" 
+            ></textarea>
+        </div>
+
+        <div class="q-section">
+            <span class="q-label">Wie hoch empfanden Sie den Zeitdruck während der Verhandlung?</span>
+            <div class="vertical-radio-group">
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t3_time_pressure" value="Sehr hoch" required>
+                    Sehr hoch
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t3_time_pressure" value="Hoch">
+                    Hoch
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t3_time_pressure" value="Weiss ich nicht">
+                    Weiß ich nicht
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t3_time_pressure" value="Gering">
+                    Gering
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t3_time_pressure" value="Sehr gering">
+                    Sehr gering
+                </label>
+            </div>
+        </div>
+
+
+        <div class="q-section">
+            <span class="q-label">Wie haben sich die verdeckten Kosten Ihres Verhandlungspartners auf Ihre Angebote ausgewirkt?</span>
+            <div class="vertical-radio-group">
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t3_hidden_costs" value="Sehr hoher Einfluss" required>
+                    Sehr hoher Einfluss
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t3_hidden_costs" value="Hoher Einfluss">
+                    Hoher Einfluss
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t3_hidden_costs" value="Weiss ich nicht">
+                    Weiß ich nicht
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t3_hidden_costs" value="Geringer Einfluss">
+                    Geringer Einfluss
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_t3_hidden_costs" value="Keinen Einfluss">
+                    Kein Einfluss
+                </label>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="q-section">
+            <span class="q-label">Bei der Angebotsabgabe hat folgender Faktor primär eine Rolle gespielt:</span>
+            <div class="vertical-radio-group">
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_primary_factor" value="Ihre eigenen Verhandlungskosten">
+                    Ihre eigenen Verhandlungskosten
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_primary_factor" value="Verhandlungskosten des Verhandlungspartners">
+                    Verhandlungskosten des Verhandlungspartners
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_primary_factor" value="Verhandlungszeit">
+                    Verhandlungszeit
+                </label>
+            </div>
+        </div>
+
+        <div class="q-section">
+            <label class="q-label" for="offerPerceptionInput" style="display:block; margin-bottom:10px;">
+                Wie haben Sie die Angebote des Verhandlungspartners insgesamt empfunden?
+            </label>
+            <textarea 
+                id="offerPerceptionInput" 
+                name="q_offer_perception" 
+                class="input-styled" 
+                rows="4" 
+                style="width:100%; min-height:100px; font-family:inherit; padding:10px; resize:vertical;" 
+            ></textarea>
+        </div>
+
+        <div class="q-section">
+            <span class="q-label">Wie erfahren sind Sie in der Verhandlungsführung?</span>
+            <div class="vertical-radio-group">
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_experience" value="Sehr erfahren">
+                    Sehr erfahren
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_experience" value="Erfahren">
+                    Erfahren
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_experience" value="Wenig erfahren">
+                    Wenig erfahren
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_experience" value="Keine Erfahrung">
+                    Keine Erfahrung
+                </label>
+            </div>
+        </div>
+
+        <div class="q-section">
+            <span class="q-label">Ihr höchster abgeschlossener Bildungsabschluss:</span>
+            <div class="vertical-radio-group">
+
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_education" value="Berufsausbildung">
+                    Berufsausbildung
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_education" value="Abitur">
+                    (Fach-) Abitur
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_education" value="Bachelor">
+                    Bachelorabschluss
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_education" value="Master">
+                    Masterabschluss
+                </label>
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_education" value="Promotion">
+                    Promotion
+                </label>
+                
+                <label class="vertical-radio-label">
+                    <input type="radio" name="q_education" value="Sonstiges" id="eduOtherRadio">
+                    Sonstiges
+                </label>
+                
+                <div id="eduOtherContainer" style="display:none; margin-left: 25px; margin-top: 5px;">
+                    <input type="text" name="q_education_other" id="eduOtherInput" class="input-styled" placeholder="Bitte angeben..." style="max-width: 300px;" minlength="4">
+                </div>
+            </div>
+        </div>
+
+        <div class="q-section">
+            <span class="q-label">Ihr Geschlecht:</span>
+            <div class="radio-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="radio-card">
+                    <input type="radio" name="q_gender" value="weiblich">
+                    <div class="radio-visual">Weiblich</div>
+                </div>
+                <div class="radio-card">
+                    <input type="radio" name="q_gender" value="maennlich">
+                    <div class="radio-visual">Männlich</div>
+                </div>
+                <div class="radio-card">
+                    <input type="radio" name="q_gender" value="divers">
+                    <div class="radio-visual">Divers</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="q-section">
+            <span class="q-label">Studieren Sie momentan?</span>
+            <div class="radio-grid">
+                <div class="radio-card">
+                    <input type="radio" name="q_is_student" value="Ja" required id="studentYes">
+                    <div class="radio-visual">Ja</div>
+                </div>
+                <div class="radio-card">
+                    <input type="radio" name="q_is_student" value="Nein" id="studentNo">
+                    <div class="radio-visual">Nein</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="q-section" id="studyFieldSection" style="display:none;">
+            <span class="q-label"> Studienrichtung / Fachbereich:</span>
+            
+            <select name="q_study_field" id="studyFieldSelect" class="input-styled" style="background:#fff; cursor:pointer;">
+                <option value="" disabled selected>Bitte wählen...</option>
+                <option value="Recht_Wirtschaft">Recht und Wirtschaftswissenschaften</option>
+                <option value="Sozial">Sozialwissenschaften</option>
+                <option value="Natur">Naturwissenschaften</option>
+                <option value="Ingenieur">Ingenieurwissenschaften</option>
+                <option value="Sonstiges">Sonstiges</option>
+            </select>
+
+            <div id="studyFieldOtherContainer" style="display:none; margin-top: 15px;">
+                <input 
+                    type="text" 
+                    name="q_study_field_other" 
+                    id="studyFieldOtherInput" 
+                    class="input-styled" 
+                    placeholder="Bitte Fachrichtung angeben..." 
+                    minlength="4"
+                >
+            </div>
+        </div>
+
+
+        <button type="submit" class="btn" style="margin-top:10px; width:100%; font-size:1.1rem; padding:16px;">Absenden & Beenden</button>
+      </form>
+    </div>
+  </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // --- 1. LOGIK FÜR STUDENTEN-STATUS ---
+        const studentRadios = document.getElementsByName('q_is_student');
+        const studySection = document.getElementById('studyFieldSection');
+        const studySelect = document.getElementById('studyFieldSelect');
+
+        function toggleStudyField() {
+            let isStudent = false;
+            for (const radio of studentRadios) {
+                if (radio.checked && radio.value === "Ja") {
+                    isStudent = true;
+                }
+            }
+            if (isStudent) {
+                studySection.style.display = "block";
+                studySelect.setAttribute("required", "required");
+            } else {
+                studySection.style.display = "none";
+                studySelect.removeAttribute("required");
+                studySelect.value = ""; 
+            }
+        }
+        // Listener hinzufügen
+        for (const radio of studentRadios) {
+            radio.addEventListener('change', toggleStudyField);
+        }
+
+
+        // --- 2. LOGIK FÜR BILDUNGSABSCHLUSS (SONSTIGES) ---
+        const eduRadios = document.getElementsByName('q_education');
+        const eduOtherContainer = document.getElementById('eduOtherContainer');
+        const eduOtherInput = document.getElementById('eduOtherInput');
+
+        function toggleEduOther() {
+            // Prüfen, ob der Radio-Button mit der ID "eduOtherRadio" (Sonstiges) gewählt ist
+            const otherRadio = document.getElementById('eduOtherRadio');
+            
+            if (otherRadio && otherRadio.checked) {
+                eduOtherContainer.style.display = "block";
+                eduOtherInput.setAttribute("required", "required");
+            } else {
+                eduOtherContainer.style.display = "none";
+                eduOtherInput.removeAttribute("required");
+                eduOtherInput.value = ""; // Feld leeren, wenn man wegklickt
+            }
+        }
+
+
+        // --- 3. LOGIK FÜR STUDIENRICHTUNG (SONSTIGES) ---
+        const studyDropdown = document.getElementById('studyFieldSelect');
+        const studyOtherContainer = document.getElementById('studyFieldOtherContainer');
+        const studyOtherInput = document.getElementById('studyFieldOtherInput');
+
+        if (studyDropdown) {
+            studyDropdown.addEventListener('change', function() {
+                if (this.value === "Sonstiges") {
+                    studyOtherContainer.style.display = "block";
+                    studyOtherInput.setAttribute("required", "required");
+                } else {
+                    studyOtherContainer.style.display = "none";
+                    studyOtherInput.removeAttribute("required");
+                    studyOtherInput.value = ""; // Feld leeren
+                }
+            });
+        }
+
+
+        // Listener hinzufügen
+        for (const radio of eduRadios) {
+            radio.addEventListener('change', toggleEduOther);
+        }
+
+    });
+  </script>
+</body>
+</html>

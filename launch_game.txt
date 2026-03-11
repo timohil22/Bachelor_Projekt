@@ -1,0 +1,55 @@
+cd Schreibtisch/Spiel
+source .venv/bin/activate.fish
+uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+
+
+
+cd Schreibtisch/Spiel
+source .venv/bin/activate.fish
+cloudflared tunnel --url http://localhost:8000
+
+TREATMENTS: Dict[str, dict] = {
+    "LENG": {
+        "label": "Verhandlung: Käufer & Verkäufer",
+        "discount_rate_per_role": {"P1": 0.001, "P2": 0.001},
+        "cooldown_per_role": {"P1": 10.0, "P2": 10.0},
+        "buyer_value": 130.0,
+        "seller_cost": 30.0,
+        # Hier nutzen wir Platzhalter für die dynamischen Werte
+        "instructions_html": """
+          <h2 style='margin:0 0 10px;'>Instruktionen</h2>
+
+          <div id="roleAlert" style="background:#e0f2fe; color:#0369a1; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #bae6fd; font-size:1.1rem;">
+             Ihre Rolle: <strong>{me}</strong>
+          </div>
+
+          <p>Sie sind {me} und verhandeln mit ihrem {opp_dat} über den Preis eines Gutes.</p>
+
+          <p>
+          Der Käufer hat ein Budget von {bv} EUR<br>
+          Der Verkäufer hat Kosten von {sc} EUR<br>
+          Die Preisverhandlung findet im Bereich von {sc} EUR und {bv} EUR statt
+          </p>
+
+          <p><strong>Angebote</strong></p>
+          <ul>
+            <li>Sie können zu jeder Zeit Angebote senden, wenn Sie nicht wegen Ihrer Wartezeit gesperrt sind</li>
+            <li>Sie haben eine Wartezeit von {cd} Sekunden</li>
+            <li>In dieser Wartezeit können Sie weder Angebote senden, noch Angebote des {opp_gen} annehmen</li>
+            <li>Das Spiel endet, wenn Sie das Angebot des {opp_gen} annehmen oder der {opp} Ihr Angebot annimmt</li>
+          </ul>
+
+          <p><strong>Ihr Bruttogewinn</strong></p>
+          <ul>
+            <li>Als Käufer: {bv} EUR minus vereinbarter Preis</li>
+            <li>Als Verkäufer: Vereinbarter Preis minus {sc} EUR</li>
+          </ul>
+
+          <p><strong>Zeit kostet Ihnen Geld</strong></p>
+          <ul>
+            <li>Ihr Nettogewinn schrumpft, je länger die Verhandlung dauert mit einem bestimmten Kostenfaktor, der für jede angefallene Sekunde anfällt</li>
+            <li>Ihr Nettogewinn wird bei jedem abgegebenen Angebot im Balkendiagramm angezeigt</li>
+          </ul>
+        """.strip(),
+    },
+}

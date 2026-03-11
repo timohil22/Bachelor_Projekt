@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Verhandlungssimulation – Start</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    /* Gesamte Seite: Wrapper mittig */
+    .home-root {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+    }
+
+    .home-wrap {
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      flex: 1; 
+      display: flex;
+      flex-direction: column;
+      margin-top: 2rem;
+    }
+
+    /* Standard Overlay für Spielhinweise (Lobby voll etc.) */
+    #homeOverlay {
+      position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+      z-index: 70; background: rgba(17,24,39,.5); backdrop-filter: blur(2px);
+    }
+    #homeOverlay.show { display: flex; }
+
+    .modal {
+      background:#fff; border-radius:14px; padding:22px; width:min(520px, 92vw);
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+    }
+
+    .muted { color: var(--muted); }
+
+    /* Header & Layout */
+    .home-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:24px; }
+    .home-title { margin:0; font-size:1.9rem; letter-spacing:-0.02em; }
+    .home-title2 { margin:0; font-size:1.5rem; letter-spacing:-0.02em; font-weight:500; }
+    .home-subtitle { margin:4px 0 0; font-size:0.95rem; color:var(--muted); }
+    .home-badge {
+      align-self:flex-start; padding:6px 12px; border-radius:999px; font-size:0.8rem; font-weight:500;
+      background:rgba(37,99,235,0.08); color:#1d4ed8; border:1px solid rgba(37,99,235,0.18);
+      text-transform:uppercase; letter-spacing:0.06em;
+    }
+
+    section { max-width: 780px; }
+    .row { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
+
+    /* Buttons */
+    .btn {
+      background: var(--accent); color:#fff; border:0; padding:10px 18px; border-radius:999px;
+      cursor:pointer; font-size:1rem; font-weight:500; box-shadow:0 4px 10px rgba(37,99,235,0.25);
+      transition:transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+    }
+    .btn:hover { filter:brightness(0.95); transform:translateY(-1px); box-shadow:0 6px 16px rgba(37,99,235,0.35); }
+    .btn:active { transform:translateY(0); box-shadow:0 3px 8px rgba(37,99,235,0.25); }
+
+    .btn-secondary { background:#e5e7eb; color:#374151; box-shadow:none; }
+    .btn-secondary:hover { filter:brightness(0.97); box-shadow:0 3px 8px rgba(15,23,42,0.08); }
+    .btn-small { padding: 6px 12px; font-size: 0.9rem; }
+    .btn-full { width: 100%; text-align: center; margin-top: 10px; }
+
+    .list { display:flex; flex-direction:column; gap:8px; margin-top:6px; min-height: 140px; }
+    .lobby-row {
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      padding:12px 14px; background:#ffffff; border-radius:12px;
+      border:1px solid var(--border); box-shadow:0 4px 12px rgba(15,23,42,0.04);
+    }
+    .lobby-meta { font-weight:600; margin-bottom:2px; }
+    .lobby-sub { font-size:0.85rem; color:var(--muted); }
+    .lobby-actions { display:flex; gap:8px; align-items:center; }
+    .hint { text-align: center; width: 100%; margin-top: 2rem; color: #6b7280; font-style: italic; }
+
+    .home-footer { text-align: center; padding: 20px; font-size: 0.85rem; color: var(--muted); }
+    .footer-link { color: var(--muted); text-decoration: underline; cursor: pointer; background: none; border: none; padding: 0; font: inherit; }
+
+    /* --- BLOCKIERENDES CONSENT OVERLAY (NEU) --- */
+    #forcedConsentOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85); /* Sehr dunkel, blockierend */
+      backdrop-filter: blur(5px);
+      z-index: 200; /* Sehr hoch, über allem anderen */
+      display: none; /* JS schaltet das an */
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .consent-card {
+      background: #fff;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      padding: 30px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      text-align: center;
+      /* FIX: Damit man auch auf kleinen Bildschirmen scrollen kann */
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .consent-card h2 { margin-top: 0; color: #111827; }
+    .consent-card p { color: #4b5563; line-height: 1.5; margin-bottom: 20px; }
+    
+    /* --- PRIVACY DETAILS (Volltext) --- */
+    #privacyOverlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
+      z-index: 300; /* Noch höher als das Consent Overlay, damit man es lesen kann */
+      display: none; align-items: center; justify-content: center;
+    }
+    .privacy-content {
+      background: #fff; width: min(700px, 90vw); max-height: 85vh; border-radius: 12px;
+      display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .privacy-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .privacy-header h2 { margin: 0; font-size: 1.4rem; }
+    
+    /* FIX: Scrollbarer Bereich */
+    .privacy-body { 
+      padding: 20px; 
+      overflow-y: auto; 
+      font-size: 0.95rem; 
+      line-height: 1.6; 
+      color: #374151; 
+      text-align: left;
+      flex: 1;      /* WICHTIG: Nimmt den restlichen Platz ein */
+      min-height: 0; /* WICHTIG für Firefox Flexbox Scrolling */
+    }
+    .privacy-body h3 { margin-top: 20px; margin-bottom: 8px; font-size: 1.1rem; color: #111; }
+    .privacy-body ul { margin-bottom: 12px; padding-left: 20px; }
+
+    @media (max-width: 640px) {
+      .home-header { flex-direction:column; align-items:flex-start; }
+      .lobby-row { flex-direction:column; align-items:flex-start; }
+      .lobby-actions { width:100%; justify-content:flex-end; }
+    }
+  </style>
+
+  <script defer src="/static/home.js"></script>
+</head>
+
+<body>
+<div class="home-root">
+  <div class="wrap home-wrap">
+    <header class="home-header">
+      <div>
+        <h1 class="home-title">Preisverhandlung</h1>
+        <h2 class="home-title2">Forschungsarbeit</h1>
+      </div>
+      <!-- <div class="home-badge">Prototyp v4.3</div> -->
+    </header>
+
+    <section class="card">
+      <div class="row">
+        <button id="btnNew" class="btn">Neue Lobby erstellen</button>
+      </div>
+      <p class="home-subtitle">Erstelle eine Lobby oder trete einer bei um an einer Verhandlung teilzunehmen.</p>
+      <div id="lobbyList" class="list"></div>
+    </section>
+
+    <footer class="home-footer">
+      <button id="openPrivacyLink" class="footer-link">Datenschutzerklärung & Teilnahmebedingungen</button>
+    </footer>
+  </div>
+</div>
+
+<div id="homeOverlay" aria-modal="true" role="dialog">
+  <div class="modal" style="text-align:center;">
+    <h2 id="homeOvTitle" style="margin:0 0 8px;">Hinweis</h2>
+    <div id="homeOvMsg" class="muted" style="margin-bottom:12px;">—</div>
+    <div class="row" style="justify-content:center; gap:10px; margin-bottom:0;">
+      <button id="homeOvClose" class="btn btn-secondary">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<div id="forcedConsentOverlay">
+  <div class="consent-card" style="max-width: 600px; text-align: left;">
+    <h2 style="text-align:center; margin-bottom: 20px;">Einwilligung zur Studienteilnahme</h2>
+    
+    <p style="font-size: 0.95rem; color: #374151; margin-bottom: 15px;">
+      Diese Anwendung dient der Durchführung einer <strong>wissenschaftlichen Forschungsarbeit</strong>. 
+      Für die Teilnahme ist Ihre Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO erforderlich.
+    </p>
+
+    <div style="background: #f3f4f6; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-size: 0.9rem; color: #4b5563;">
+      <strong>Umfang der Datenverarbeitung im Überblick:</strong>
+      <ul style="margin: 8px 0 0 20px; padding: 0;">
+        <li style="margin-bottom: 6px;">
+          <span style="color:#111827; font-weight:500;">Speicherung & Auswertung:</span> 
+          Durch die Verhandlung gesendeten und empfangenen Angebote und Ergebnisse werden <strong>pseudonymisiert</strong> (unter einer zufälligen ID) gespeichert und zu Forschungszwecken ausgewertet.
+        </li>
+        <li style="margin-bottom: 6px;">
+          <span style="color:#111827; font-weight:500;">Technik & Sicherheit:</span> 
+          Wir nutzen technisch notwendige Cookies/LocalStorage (für den Ablauf der Simulation) sowie <em>Cloudflare</em> (zur Absicherung der Verbindung).
+        </li>
+        <li>
+          <span style="color:#111827; font-weight:500;">Kein Tracking:</span> 
+          Es werden <strong>keine</strong> Werbe-Tracker oder Analyse-Tools Dritter eingesetzt.
+        </li>
+      </ul>
+          <button id="btnPrivacyDetails" class="btn btn-secondary btn-small" style="margin-top:20px; display: block; margin-left: auto; margin-right: auto;">
+      Vollständige Datenschutzerklärung lesen
+    </button>
+    </div>
+      
+    <p style="font-size: 0.95rem; color: #374151; margin-bottom: 15px;">
+      Die Teilnahme ist freiwillig. <br> Sie haben das Recht, Ihre Einwilligung jederzeit zu widerrufen.
+    </p>
+
+    <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 20px; text-align: left;">
+      <input type="checkbox" id="consentCheckbox" style="margin-top: 4px; transform: scale(1.2); cursor: pointer;">
+      <label for="consentCheckbox" style="font-size: 0.9rem; color: #374151; cursor: pointer; line-height: 1.4;">
+        Ich habe die Datenschutzerklärung zur Kenntnis genommen und stimme der Verarbeitung meiner pseudonymisierten Daten sowie der Nutzung technisch notwendiger Cookies zu.
+      </label>
+    </div>
+
+    <button id="btnConsentAccept" class="btn btn-full" disabled style="opacity: 0.5; cursor: not-allowed;">
+      Zur Studie
+    </button>
+  </div>
+</div>
+
+<div id="privacyOverlay">
+  <div class="privacy-content">
+    <div class="privacy-header">
+      <h2>Datenschutzerklärung</h2>
+      <button id="closePrivacy" class="btn btn-secondary btn-small" style="padding:6px 12px;">✕</button>
+    </div>
+    <div class="privacy-body">
+      <p><strong>Stand: Dezember 2025</strong></p>
+
+      <h3>1. Verantwortliche Stelle</h3>
+      <p>Verantwortlich für die Datenverarbeitung im Sinne der Datenschutz-Grundverordnung (DSGVO) sind:</p>
+      <p>
+        Mila Jill Bettin, Janne Gauderer, Timo Heil, Dominik Taus<br>
+        Frankfurt University of Applied Sciences<br>
+        Nibelungenplatz 1<br>
+        60318 Frankfurt am Main
+      </p>
+      <p>Diese Datenerhebung erfolgt im Rahmen eines studentischen Forschungsprojekts.</p>
+
+      <h3>2. Zweck der Verarbeitung und Rechtsgrundlage</h3>
+      <p><strong>Zweck:</strong> Die Webseite dient der Durchführung einer ökonomischen Verhandlungssimulation zur Erforschung von Verhandlungsverhalten unter variierenden Kosten- und Zeitbedingungen.</p>
+      <p><strong>Rechtsgrundlage:</strong> Die Verarbeitung Ihrer personenbezogenen Daten erfolgt auf Grundlage Ihrer <strong>freiwilligen Einwilligung</strong> gemäß Art. 6 Abs. 1 lit. a DSGVO. Sie können diese Einwilligung jederzeit widerrufen, indem Sie die Webseite verlassen (siehe Punkt 6).</p>
+
+      <h3>3. Art und Umfang der Datenverarbeitung</h3>
+      <p>Wir verarbeiten Daten ausschließlich in pseudonymisierter Form. Eine Zuordnung zu Ihrer realen Person (Klarnamen, IP-Adresse im Klartext) findet in der Auswertung nicht statt.</p>
+      
+      <strong>a) Technische Zugriffsdaten (Server-Logfiles)</strong>
+      <p>Bei der Nutzung der Webseite werden technisch bedingt Daten übertragen (z.B. Browsertyp, Zeitstempel). Diese werden systemseitig flüchtig gespeichert, um den sicheren Betrieb zu gewährleisten.</p>
+
+      <strong>b) Simulationsdaten</strong>
+      <p>Während der Simulation speichern wir:</p>
+      <ul>
+        <li>Ihre zugewiesene Rolle (Käufer/Verkäufer)</li>
+        <li>Getätigte Angebote und Reaktionen (Akzeptanz/Ablehnung)</li>
+        <li>Zeitstempel der Aktionen</li>
+        <li>Ergebnisse der Verhandlung</li>
+      </ul>
+      <p>Diese Daten werden unter einer zufälligen Sitzungs-ID ("PID") gespeichert.</p>
+
+      <strong>c) Fragebogen (Freiwillig)</strong>
+      <p>Im Anschluss können Sie Angaben zu Demografie (z.B. Alter, Bildung) und subjektivem Empfinden machen. Diese Daten werden ebenfalls nur mit der PID verknüpft.</p>
+
+      <h3>4. Technische Dienstleister & Cloudflare</h3>
+      <p>Um die Sicherheit und Verfügbarkeit dieser Webanwendung zu gewährleisten, nutzen wir den Dienst <strong>Cloudflare</strong> (Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA) als technisches Gateway (Tunnel / Reverse Proxy).</p>
+      <p>Der Datenverkehr zwischen Ihrem Browser und unserem Server fließt durch das Netzwerk von Cloudflare. Hierbei kommen technisch notwendige Cookies (z.B. <code>_cfuvid</code>, <code>cf_clearance</code>) zum Einsatz, um:</p>
+      <ul>
+        <li>Bösartige Bots und Angriffe zu erkennen (DDoS-Schutz).</li>
+        <li>Die Sicherheit der Verbindung zu gewährleisten.</li>
+      </ul>
+      <p>Rechtsgrundlage hierfür ist unser berechtigtes Interesse an der Sicherheit der Verarbeitung gemäß Art. 6 Abs. 1 lit. f DSGVO.</p>
+
+      <h3>5. Lokaler Speicher (Local Storage) & Cookies</h3>
+      <p>Wir setzen keine Werbe- oder Tracking-Cookies ein. Wir nutzen lediglich den lokalen Speicher Ihres Browsers (LocalStorage) für technisch notwendige Funktionen:</p>
+      <ul>
+        <li><code>pid_[Code]</code>: Wiederherstellung Ihrer Sitzung bei Verbindungsabbruch.</li>
+        <li><code>research_consent</code>: Speicherung Ihrer Einwilligung (damit das Banner nicht erneut erscheint).</li>
+      </ul>
+
+      <h3>6. Speicherdauer und Ihre Rechte</h3>
+      <p>Die erhobenen Forschungsdaten werden zeitlich unbegrenzt für die wissenschaftliche Auswertung gespeichert. Da die Daten pseudonymisiert sind und wir keine Zuordnungstabelle zu Klarnamen besitzen, ist eine Löschung oder Auskunft gemäß Art. 11 Abs. 2 DSGVO nur möglich, wenn Sie uns Ihre spezifische PID (Sitzungs-ID) mitteilen können.</p>
+      <p>Sofern Sie uns Ihre PID mitteilen, haben Sie das Recht auf Auskunft, Berichtigung oder Löschung Ihrer Daten.</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

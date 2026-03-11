@@ -1,0 +1,1036 @@
+/* -------------------------------------------------------
+   ZENTRALE FARBEN & BASIS
+-------------------------------------------------------*/
+:root {
+  --col-buyer: #2563eb;
+  --col-seller: #dc2626;
+  --col-buyer-light: #bfdbfe;
+  --col-seller-light: #fee2e2;
+
+  --col-buyer-bg: #eff6ff;
+  --col-seller-bg: #fee2e2;
+
+  --bg: #f6f7fb;
+  --fg: #1f2430;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+
+  --accent: #2563eb;
+  --danger: #dc2626;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Standard Container für alles */
+.wrap {
+  max-width: 1200px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+/* -------------------------------------------------------
+   CARDS & LAYOUT
+-------------------------------------------------------*/
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Animations-Klassen */
+.fade-out-main {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+.fade-in {
+  opacity: 1 !important;
+  transition: opacity 0.5s ease-in;
+}
+
+#resultWrap {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+}
+
+/* -------------------------------------------------------
+   HEADER (Single Line)
+-------------------------------------------------------*/
+.header-single-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  gap: 20px;
+  min-height: 90px;
+}
+
+.header-time {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.header-chips-center {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.header-role {
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
+  min-width: 120px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+}
+
+/* -------------------------------------------------------
+   CHIPS (3-SPALTEN LAYOUT)
+-------------------------------------------------------*/
+.chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.9rem;
+  width: auto;
+}
+
+.chip-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.chip-role {
+  width: 110px;
+  text-align: right;
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  color: #111;
+  margin-right: 15px;
+}
+
+.chip-stats {
+  display: flex;
+  gap: 0;
+}
+
+.chip-stats div {
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Spalte 2: Kosten */
+.chip-stats div:nth-child(1) {
+  width: 140px;
+}
+
+/* Spalte 3: Wartezeit */
+.chip-stats div:nth-child(2) {
+  width: 130px;
+  text-align: center;
+}
+
+.chip-buyer {
+  background: var(--col-buyer-bg) !important;
+}
+
+.chip-seller {
+  background: var(--col-seller-bg) !important;
+}
+
+.chip-buyer .chip-role {
+  color: var(--col-buyer);
+}
+
+.chip-seller .chip-role {
+  color: var(--col-seller);
+}
+
+
+/* -------------------------------------------------------
+   INPUTS & BUTTONS
+-------------------------------------------------------*/
+input {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 120px;
+  outline: none;
+  font-size: 1rem;
+  background: #fff;
+}
+
+input[readonly] {
+  background: #f9fafb;
+}
+
+/* Button Styles */
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s, transform 0.1s, opacity 0.3s ease-in-out;
+}
+
+button:hover {
+  filter: brightness(0.9);
+}
+
+button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.btn {
+  background: var(--accent);
+}
+
+.btn-secondary {
+  background: #6b7280;
+}
+
+.btn-red {
+  background-color: #6b7280 !important;
+}
+
+.btn-accept {
+  background-color: #16a34a !important;  /* schönes Grün */
+}
+
+.btn-accept:hover {
+  filter: brightness(0.9);
+}
+
+
+.cooldown-hide {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  cursor: default;
+}
+
+/* Spezielles Input-Styling (Groß & Zentriert) */
+#offerInput {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+  color: #111;
+  padding: 8px 12px;
+}
+
+/* Spinner entfernen */
+#offerInput::-webkit-outer-spin-button,
+#offerInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#offerInput {
+  -moz-appearance: textfield;
+}
+
+.price-display {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111;
+  padding: 0 12px;
+  flex-grow: 1;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* -------------------------------------------------------
+   ACTION GRID & CHARTS
+-------------------------------------------------------*/
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  position: relative;
+}
+
+.action-grid::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #d1d5db;
+  transform: translateX(-50%);
+}
+
+.price-block {
+  margin-top: 14px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.price-label {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+  text-align: left;
+}
+
+.price-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* ... IN DER DATEI style.css ... */
+
+/* Container für Kreis + Text */
+.circular-timer-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+  height: 40px; /* Feste Höhe reservieren */
+}
+
+/* SVG Einstellungen */
+.timer-svg {
+  transform: rotate(-90deg); /* Startet bei 12 Uhr */
+}
+
+.timer-bg {
+  fill: none;
+  stroke: #e5e7eb; /* Helles Grau Hintergrund */
+  stroke-width: 10;
+}
+
+.timer-fg {
+  fill: none;
+  stroke: #000 !important; /*stroke: var(--danger); */ /* ROT (#dc2626) */
+  stroke-width: 10;
+  stroke-linecap: round; /* Runde Enden */
+  
+  /* Kreisumfang bei Radius 45: 2 * pi * 45 ≈ 282.7 */
+  stroke-dasharray: 283;
+  stroke-dashoffset: 0; /* 0 = Voll, 283 = Leer */
+  
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+/* Partner-Kreis (grau statt rot, falls gewünscht - sonst .opponent entfernen) */
+.timer-fg.opponent {
+  stroke: #000 !important; /*stroke: #9ca3af; */ 
+}
+
+.timer-text {
+  font-weight: bold;
+  font-variant-numeric: tabular-nums; /* Verhindert Wackeln der Zahlen */
+  color: var(--muted);
+  font-size: 1.1rem;
+  min-width: 40px;
+}
+/* Charts */
+.chart-container {
+  margin-top: 20px;
+  padding-top: 15px;
+  display: flex;
+  gap: 10px;
+  height: 240px;
+  min-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f9fafb;
+  overflow: hidden;
+  position: relative;
+}
+
+.col-header {
+  padding: 6px;
+  text-align: center;
+  background: rgba(255,255,255,0.7);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  z-index: 5;
+}
+
+.col-role {
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.col-stats {
+  font-size: 1.0rem !important;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.stat-val {
+  font-weight: bold;
+  color: #111;
+}
+
+.text-buyer {
+  color: var(--col-buyer);
+}
+
+.text-seller {
+  color: var(--col-seller);
+}
+
+.col-bar-area {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.bar-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+}
+
+.bar-gross {
+  width: 60%;
+  background-color: #fff;
+  border: 1px solid #9ca3af;
+  border-bottom: none;
+  display: flex;
+  flex-direction: column-reverse;
+  transition: height 0.2s linear;
+  position: absolute;
+  bottom: 0;
+}
+
+.bar-net {
+  width: 100%;
+  height: 0%;
+  transition: height 0.2s linear;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.role-buyer .bar-net {
+  background-color: var(--col-buyer-light);
+}
+
+.role-seller .bar-net {
+  background-color: var(--col-seller-light);
+}
+
+/* -------------------------------------------------------
+   TABELLEN & VERLAUF (ZENTRIERT)
+-------------------------------------------------------*/
+
+/* Container für den Verlauf unten */
+.centered-card {
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  /* Transparentes Design */
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.table-wrapper {
+  display: block;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.log-table th {
+  background: #e5e7eb;
+  color: var(--fg);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px 10px;
+  font-weight: 600;
+  border-bottom: 2px solid #d1d5db;
+}
+
+.log-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.log-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Zeilen Styles */
+.log-row-offer {
+  background: #fff;
+}
+
+.log-row-offer:nth-child(even) {
+  background: #f9fafb;
+}
+
+.log-row-accepted {
+  background-color: #dcfce7 !important;
+}
+
+.log-row-accepted td {
+  color: #166534;
+  font-weight: bold;
+  border-top: 1px solid #86efac;
+}
+
+/* -------------------------------------------------------
+   HELPER (Overlays, Toasts, Media Queries)
+-------------------------------------------------------*/
+#instrOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  background: rgba(17,24,39,.5);
+  backdrop-filter: blur(2px);
+
+  /* NEU: erlaubt Scrollen, falls Inhalt höher als Viewport */
+  overflow-y: auto;
+  padding: 16px 0; /* etwas Abstand oben/unten, damit man gut scrollen kann */
+}
+
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px;
+  width: min(680px, 92vw);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+
+  /* NEU: Modal nie höher als der Bildschirm */
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17,24,39,.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+#toastStack {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999 !important;
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 260px;
+  max-width: 460px;
+  background: #111827;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  opacity: 0;
+  transform: translateY(-14px);
+}
+
+.toast.show {
+  animation: toastIn .28s ease forwards;
+}
+
+.toast.hide {
+  animation: toastOut .28s ease forwards;
+}
+
+@keyframes toastIn {
+  0% { opacity: 0; transform: translateY(-14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastOut {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-14px); }
+}
+
+@media (max-width: 850px) {
+  .header-single-line {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  .header-chips-center {
+    width: 100%;
+  }
+  .action-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .action-grid::before {
+    display: none;
+  }
+}
+
+/* --- FRAGEBOGEN STYLES --- */
+
+.q-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.q-header h1 { margin-bottom: 8px; }
+.q-header p { color: var(--muted); }
+
+.q-section {
+  background: #f9fafb; /* Sehr helles Grau zur Abgrenzung */
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid #f3f4f6;
+}
+
+.q-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--fg);
+  font-size: 1.05rem;
+}
+
+/* Klickbare Karten für Radio-Optionen */
+.radio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.radio-card {
+  position: relative;
+}
+
+/* Verstecke den echten Radio-Button, aber er bleibt funktional */
+.radio-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.radio-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  color: var(--muted);
+  font-weight: 500;
+  height: 100%;
+}
+
+/* Hover Effekt */
+.radio-card input[type="radio"]:hover + .radio-visual {
+  border-color: var(--accent);
+  background: #eff6ff; /* Ganz helles Blau */
+}
+
+/* Ausgewählter Zustand */
+.radio-card input[type="radio"]:checked + .radio-visual {
+  border-color: var(--accent);
+  background: var(--col-buyer); /* Blau */
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+/* --- IN static/style.css ERSETZEN --- */
+
+/* Styles für die 1-5 Skala */
+.scale-wrapper {
+  display: flex;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 8px 10px; /* Etwas mehr Luft */
+  max-width: 420px;
+  margin: 0 auto;
+  gap: 4px; /* Abstand zwischen den Optionen */
+}
+
+.scale-opt {
+  position: relative;
+  flex: 1;
+  display: flex;       /* Flexbox damit Input Höhe füllt */
+  align-items: center; 
+  justify-content: center;
+  height: 44px;        /* Feste Höhe für Klickfläche */
+}
+
+/* Der unsichtbare Klick-Layer - MUSS exakt sitzen */
+.scale-opt input[type="radio"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10; /* Über allem anderen liegen */
+}
+
+/* Die sichtbare Zahl */
+.scale-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: all 0.2s;
+  font-weight: bold;
+  color: var(--muted);
+  background: #f3f4f6; /* Leichter grauer Hintergrund als 'unselected' Guide */
+  z-index: 1; /* Unter dem Input */
+}
+
+/* Wenn Input gecheckt ist, ändere den Nachbarn (.scale-num) */
+.scale-opt input:checked + .scale-num {
+  background: var(--col-seller);
+  color: #fff;
+  transform: scale(1.15);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.scale-labels {
+  display: flex;
+  justify-content: space-between;
+  max-width: 400px;
+  margin: 8px auto 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding: 0 12px;
+}
+
+/* Input Feld Styling */
+.input-styled {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.input-styled:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* -------------------------------------------------------
+   MODERNE VERTIKALE RADIO-LISTEN (Cards mit perfektem Kreis)
+-------------------------------------------------------*/
+
+.vertical-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+/* Das Label als klickbare Karte */
+.vertical-radio-label {
+  display: flex;
+  align-items: center; /* Zentriert Items vertikal */
+  width: 100%;
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: 1rem;
+  color: var(--fg);
+  font-weight: 500;
+  position: relative;
+}
+
+/* Hover-Effekt */
+.vertical-radio-label:hover {
+  border-color: var(--accent);
+  background: #fbfbfc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* ZUSTAND: AUSGEWÄHLT (Helles Blau für die ganze Karte) */
+.vertical-radio-label:has(input:checked) {
+  border-color: var(--accent);
+  background-color: var(--col-buyer-bg);
+  color: var(--accent);
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
+}
+
+/* CUSTOM RADIO BUTTON (Perfekter Kreis) */
+.vertical-radio-label input[type="radio"] {
+  /* 1. Browser-Standard entfernen */
+  appearance: none;
+  -webkit-appearance: none;
+  
+  /* 2. GLOBALE INPUT-STYLES NEUTRALISIEREN (Das ist der Fix!) */
+  padding: 0;          /* Entfernt das globale Padding (10px 12px), das das "Ei" verursacht */
+  min-width: 24px;     /* Überschreibt die globale min-width von 120px */
+  margin: 0;           /* Reset */
+  margin-right: 16px;  /* Abstand zum Text wiederherstellen */
+  
+  /* 3. Exakte Kreis-Maße setzen */
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  
+  /* 4. Styling */
+  border: 2px solid #d1d5db;
+  background-color: #fff;
+  flex-shrink: 0;      /* Verhindert Quetschen */
+  cursor: pointer;
+  
+  /* Zentrierung für den inneren Punkt */
+  display: grid;
+  place-content: center;
+  transition: all 0.2s ease;
+}
+
+/* Der innere Punkt */
+.vertical-radio-label input[type="radio"]::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  transform: scale(0);
+  transition: 0.2s transform cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Zustand: Ausgewählt */
+.vertical-radio-label input[type="radio"]:checked {
+  border-color: var(--accent);
+}
+
+.vertical-radio-label input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+/* Der innere Punkt (Dot) - initial unsichtbar */
+.vertical-radio-label input[type="radio"]::before {
+  content: "";
+  width: 12px; /* Größe des inneren Punktes */
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent); /* Blaue Farbe */
+  
+  /* Startzustand: Auf 0 skaliert (unsichtbar) */
+  transform: scale(0);
+  transition: 0.2s transform cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* ZUSTAND: RADIO AUSGEWÄHLT */
+/* 1. Äußerer Kreis wird blau */
+.vertical-radio-label input[type="radio"]:checked {
+  border-color: var(--accent);
+}
+
+/* 2. Innerer Punkt ploppt auf (skaliert auf 1) */
+.vertical-radio-label input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+/* -----------------------------------------
+   Handy-Drehen-Animation im Home-Overlay
+----------------------------------------- */
+
+.phone-orientation-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.phone-orientation-icon {
+  width: 60px;
+  height: 100px;
+  border-radius: 14px;
+  border: 3px solid #111827;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Animation: von Hoch- nach Querformat drehen */
+  animation: phone-rotate 2.5s infinite ease-in-out;
+  transform-origin: center center;
+  background: #f9fafb;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: #f0f2f6;
+}
+
+/* Lautsprecher-Schlitz */
+.phone-orientation-icon::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;       /* Länge des Schlitzes */
+  height: 2px;       /* Dicke (sehr dünn) */
+  border-radius: 999px; /* Voll abgerundet */
+  background: #111827;  /* dunkelgrau/schwarz */
+  opacity: 0.8;
+}
+
+
+/* Text unter dem Icon */
+.phone-orientation-text {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+
+.choice-card {
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 30px;
+  width: 200px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.choice-card:hover {
+  border-color: var(--col-primary);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.choice-card h3 { margin: 10px 0 5px 0; }
+
+/* Keyframes für Dreh-Animation:
+   - kurz stehen im Portrait,
+   - dann smooth ins Landscape,
+   - dort kurz halten,
+   - wieder zurück
+*/
+@keyframes phone-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(0deg);
+  }
+  45% {
+    transform: rotate(90deg);
+  }
+  70% {
+    transform: rotate(90deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}

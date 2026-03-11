@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lobby {{ code }}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />  
+  <style>
+    /* Chips in den Spalten sollen untereinander angeordnet sein, nicht nebeneinander */
+    #chipLeft, #chipRight {
+      flex-direction: column;
+      height: auto;
+      width: 100%;
+      margin-bottom: 20px;
+      padding: 12px;
+      background-color: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+    
+    #chipLeft .chip-content, #chipRight .chip-content {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    #chipLeft .chip-role, #chipRight .chip-role {
+      width: auto;
+      margin: 0 0 5px 0;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    
+    #chipLeft .chip-stats, #chipRight .chip-stats {
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+    }
+    
+    /* Überschreibe die festen Breiten aus der style.css für die Spaltenansicht */
+    #chipLeft .chip-stats div, #chipRight .chip-stats div {
+      width: auto !important; 
+      text-align: center !important;
+      display: block;
+    }
+
+    .countdown-backdrop {
+    background: rgba(0, 0, 0, 0.8); /* 10% Schwarz */
+  }
+  </style>
+</head>
+
+<body data-code="{{ code }}">
+
+<div id="instrOverlay" aria-live="polite" style="display:none;">
+    <div class="modal" style="max-width: 800px; width: 95%;">
+      
+<div id="instrSelectionWrap" style="text-align:center; padding: 20px;">
+        <h2 style="color:var(--col-primary); margin-bottom: 30px;">Wie möchten Sie die Instruktionen erhalten?</h2>
+        
+        <div style="display:flex; justify-content:center; gap:30px; flex-wrap:wrap; margin-bottom: 30px;">
+          <div id="btnChooseVideo" class="choice-card">
+            <i class="fas fa-video" style="font-size: 3rem; color: #000;"></i> 
+            <h3>Video</h3>
+            <p class="muted">Erklärvideo ansehen</p>
+          </div>
+
+          <div id="btnChooseText" class="choice-card">
+            <i class="fas fa-book" style="font-size: 3rem; color: #000;"></i>
+            <h3>Text</h3>
+            <p class="muted">Text lesen</p>
+          </div>
+        </div>
+
+        <button id="btnCloseInstr" class="btn btn-secondary" style="display:none;">
+            Zurück zur Verhandlung
+        </button>
+      </div>
+
+      <div id="instrVideoWrap" style="display:none; flex-direction:column; align-items:center;">
+        <h3 style="margin-top:0;">Video Instruktion</h3>
+        <video id="instrVideoPlayer" controls style="width:100%; max-height:60vh; background:#000; border-radius:8px; margin-bottom:15px;">
+            <source src="" type="video/mp4">
+            Ihr Browser unterstützt keine Videos.
+        </video>
+        <div style="width:100%; display:flex; justify-content:space-between;">
+            <button id="btnBackFromVideo" class="btn btn-secondary">Zurück zur Auswahl</button>
+            <button id="btnInstrNextVideo" class="btn">Verstanden & Weiter</button>
+        </div>
+      </div>
+
+      <div id="instrTextWrap" style="display:none;">
+        <div id="instrHtml"></div> <div style="display:flex; justify-content:space-between; margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+            <button id="btnBackFromText" class="btn btn-secondary">Zurück zur Auswahl</button>
+            <button id="btnInstrNextText" class="btn">Verstanden & Weiter</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<div id="overlay" style="display:none;">
+  <div class="modal" id="overlayContent">
+        <h2 style="margin:0 0 6px;">Warteraum</h2>
+        <div class="muted" style="margin-bottom:12px;">
+          Lobby: <strong id="overlayLobbyCode">{{ code }}</strong>
+        </div>
+        <div id="overlayPlayers" class="card" style="padding:12px; margin-bottom:12px;"></div>
+        
+        <div class="row" style="justify-content: center; gap: 10px;">
+          <button id="btnToggleReady" class="btn">Bereit</button>
+        </div>
+
+        <div style="margin-top: 15px;">
+          <button id="btnReviewInstr" class="btn btn-secondary" style="font-size: 0.75rem; padding: 5px 10px;">
+              <i class="fas fa-book-open"></i> Instruktionen noch mal ansehen?
+          </button>
+        </div>
+
+        <div id="status" class="muted" style="margin-top:10px; text-align:center;">...</div>
+      </div>
+    
+  <div id="centerOverlay" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; z-index:80; color:white; flex-direction:column;">
+    <div id="centerHeader" style="font-size: 1.5rem; margin-bottom: 5px; color: white; height: 1.5rem;"></div>
+    <h1 id="centerTitle" style="font-size: 3rem; margin:0;">Start</h1>
+  </div>
+    </div>
+
+  <div id="practiceEndOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:10000; align-items:center; justify-content:center;">
+      <div class="modal" style="background:white; padding:30px; border-radius:8px; max-width:500px; width:90%; text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+        <h2 style="color:#0284c7; margin-top:0;">Übungsrunde beendet</h2>
+        
+        <p style="font-size:1.1rem; margin: 20px 0;">
+          Einigungspreis: <strong><span id="practiceEndPriceDisplay">-</span> EUR</strong>.
+        </p>
+
+        <button id="btnDismissPractice" class="btn" style="width:100%;">Zur Verhandlung</button>
+      </div>
+    </div>
+
+  <div class="wrap" id="mainWrap" style="display: none;">
+
+    <div id="practiceBanner" style="display:none; background:#ffeb3b; color:#856404; text-align:center; padding:15px; font-weight:bold; margin-bottom:20px; border:1px solid #ffeeba; border-radius:8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        Testrunde
+    </div>
+
+    <div id="timeInfo" class="header-time" style="text-align: center; margin-bottom: 50px; margin-top: 20px;">Zeit: 0s</div>
+
+    <div class="card">
+      <div class="action-grid">
+        
+        <div class="price-block">
+          
+          <div id="chipLeft" class="chip">
+            <div class="chip-content">
+              <div id="leftRoleTitle" class="chip-role">-</div>
+              <div id="leftStats" class="chip-stats">...</div>
+            </div>
+          </div>
+
+          <div id="myPriceLabel" class="price-label" style="font-weight:bold;">Ihr Angebot</div>
+          <div class="price-row">
+            <input id="offerInput" type="number" min="30" max="130">
+            <button id="btnOffer" class="btn-red">Senden</button>
+          </div>
+          
+          <div id="myCooldownWrap" class="circular-timer-wrap" style="visibility: hidden;">
+            <svg class="timer-svg" width="36" height="36" viewBox="0 0 100 100">
+              <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+              <circle id="myTimerCircle" class="timer-fg" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div style="display: flex; flex-direction: column; justify-content: center; margin-left: 8px;">
+              <span id="myTimerText" class="timer-text" style="line-height: 1.1;">0s</span>
+              <span id="myTimerLabel" style="font-size: 0.75rem; color: #6b7280; white-space: nowrap;">
+                Wartezeit
+              </span>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <div class="chart-col">
+              <div class="col-header">
+                <div class="col-role text-buyer">Käufer</div>
+                <div class="col-stats">
+                  Netto: <span id="txtMyBuyerNet" class="stat-val">-</span><br>
+                  <span class="muted">Brutto: <span id="txtMyBuyerGross">-</span></span>
+                </div>
+              </div>
+              <div class="col-bar-area">
+                <div class="bar-wrapper role-buyer">
+                  <div class="bar-gross" id="barMyBuyerGross" style="height:0%;">
+                     <div class="bar-net" id="barMyBuyerNet" style="height:0%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chart-col">
+              <div class="col-header">
+                <div class="col-role text-seller">Verkäufer</div>
+                <div class="col-stats">
+                  Netto: <span id="txtMySellerNet" class="stat-val">-</span><br>
+                  <span class="muted">Brutto: <span id="txtMySellerGross">-</span></span>
+                </div>
+              </div>
+              <div class="col-bar-area">
+                <div class="bar-wrapper role-seller">
+                  <div class="bar-gross" id="barMySellerGross" style="height:0%;">
+                     <div class="bar-net" id="barMySellerNet" style="height:0%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="price-block">
+          
+          <div id="chipRight" class="chip">
+            <div class="chip-content">
+              <div id="rightRoleTitle" class="chip-role">-</div>
+              <div id="rightStats" class="chip-stats">...</div>
+            </div>
+          </div>
+
+          <div id="oppPriceLabel" class="price-label" style="font-weight:bold; color:#4b5563;">Angebot Partner</div>
+          <div class="price-row">
+            <div id="oppPriceDisplay" class="price-display" style="border-radius: 8px; height: 50px; flex:0 0 120px;">—</div>
+            <button id="btnAccept" class="btn btn-accept">Akzeptieren</button>
+          </div>
+          
+          <div id="oppCooldownWrap" class="circular-timer-wrap" style="visibility: hidden;">
+            <svg class="timer-svg" width="36" height="36" viewBox="0 0 100 100">
+              <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+              <circle id="oppTimerCircle" class="timer-fg opponent" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div style="display: flex; flex-direction: column; justify-content: center; margin-left: 8px;">
+                <span id="oppTimerText" class="timer-text" style="line-height: 1.1;">0s</span>
+                <span id="oppTimerLabel" style="font-size: 0.75rem; color: #6b7280; white-space: nowrap;">Wartezeit</span>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <div class="chart-col">
+              <div class="col-header">
+                <div class="col-role text-buyer">Käufer</div>
+                <div class="col-stats">
+                  Netto: <span id="txtOppBuyerNet" class="stat-val">-</span><br>
+                  <span class="muted">Brutto: <span id="txtOppBuyerGross">-</span></span>
+                </div>
+              </div>
+              <div class="col-bar-area">
+                <div class="bar-wrapper role-buyer">
+                  <div class="bar-gross" id="barOppBuyerGross" style="height:0%;">
+                     <div class="bar-net" id="barOppBuyerNet" style="height:0%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chart-col">
+              <div class="col-header">
+                <div class="col-role text-seller">Verkäufer</div>
+                <div class="col-stats">
+                  Netto: <span id="txtOppSellerNet" class="stat-val">-</span><br>
+                  <span class="muted">Brutto: <span id="txtOppSellerGross">-</span></span>
+                </div>
+              </div>
+              <div class="col-bar-area">
+                <div class="bar-wrapper role-seller">
+                  <div class="bar-gross" id="barOppSellerGross" style="height:0%;">
+                     <div class="bar-net" id="barOppSellerNet" style="height:0%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> 
+    </div> 
+
+    <div class="card centered-card">
+      <h3 style="margin-top:0; font-size:1rem; margin-bottom: 10px;">Verlauf</h3>
+      <div class="table-wrapper">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th style="width: 20px;">Zeit</th>
+              <th style="width: 30px;">Akteur</th>
+              <th style="width: 30px;">Preis</th>
+            </tr>
+          </thead>
+          <tbody id="offersLogBody">
+            </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div> <div class="wrap" id="resultWrap" style="display:none; justify-content:center; align-items:center; min-height:80vh;">
+    <div class="card" style="max-width:520px; width:100%; text-align:center;">
+      <h2 style="margin-top:0;">Verhandlungsende</h2>
+      <p class="muted" style="margin-bottom:12px;">
+          Einigungspreis: <strong><span id="resultPrice">–</span></strong>
+      </p>
+
+      <div class="chart-container">
+        <div class="chart-col">
+          <div class="col-header">
+            <div class="col-role text-buyer">Käufer</div>
+            <div class="col-stats">
+              Netto: <span id="txtResBuyerNet" class="stat-val">-</span><br>
+              <span class="muted">
+                Brutto: <span id="txtResBuyerGross">-</span>
+              </span>
+            </div>
+          </div>
+          <div class="col-bar-area">
+            <div class="bar-wrapper role-buyer">
+              <div class="bar-gross" id="barResBuyerGross" style="height:0%;">
+                <div class="bar-net" id="barResBuyerNet" style="height:0%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-col">
+          <div class="col-header">
+            <div class="col-role text-seller">Verkäufer</div>
+            <div class="col-stats">
+              Netto: <span id="txtResSellerNet" class="stat-val">-</span><br>
+              <span class="muted">
+                Brutto: <span id="txtResSellerGross">-</span>
+              </span>
+            </div>
+          </div>
+          <div class="col-bar-area">
+            <div class="bar-wrapper role-seller">
+              <div class="bar-gross" id="barResSellerGross" style="height:0%;">
+                <div class="bar-net" id="barResSellerNet" style="height:0%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="muted" style="margin-top:16px; font-size:0.85rem;">
+        Zeit bis Einigung: <span id="resultTime">–</span> s
+      </p>
+
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+        <button id="btnToQuestionnaire" class="btn" style="width:100%;">Weiter zum Fragebogen</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/static/lobby.js"></script>
+</body>
+</html>
